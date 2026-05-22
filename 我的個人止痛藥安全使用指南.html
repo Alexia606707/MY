@@ -546,6 +546,65 @@
         .diet-card h4 { font-size: 1rem; margin-bottom: 8px; color: #c53030; }
         .diet-card p { font-size: 0.9rem; color: #4a5568; }
 
+        /* === 置頂導覽列 === */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0;
+            margin: -20px -20px 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .nav-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e0 transparent;
+            -webkit-overflow-scrolling: touch;
+            gap: 0;
+        }
+        .nav-inner::-webkit-scrollbar { height: 4px; }
+        .nav-inner::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
+        .nav-btn {
+            flex-shrink: 0;
+            padding: 10px 14px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #4a5568;
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            transition: all 0.2s;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .nav-btn:hover {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: #f7fafc;
+        }
+        .nav-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        /* 讓錨點跳轉時不被 nav 擋住 */
+        [id] { scroll-margin-top: 56px; }
+
+        .footer {
+            text-align: center;
+            margin-top: 36px;
+            padding: 16px;
+            font-size: 0.82rem;
+            color: #a0aec0;
+        }
+
         /* ============================
            手機響應式 (max-width: 600px)
            ============================ */
@@ -660,64 +719,6 @@
             .safe-mix p { font-size: 0.88rem !important; }
         }
 
-        /* === 置頂導覽列 === */
-        .sticky-nav {
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            background: rgba(255,255,255,0.92);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid #e2e8f0;
-            padding: 0;
-            margin: -20px -20px 20px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        }
-        .nav-inner {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            overflow-x: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #cbd5e0 transparent;
-            -webkit-overflow-scrolling: touch;
-            gap: 0;
-        }
-        .nav-inner::-webkit-scrollbar { height: 4px; }
-        .nav-inner::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
-        .nav-btn {
-            flex-shrink: 0;
-            padding: 10px 14px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: #4a5568;
-            text-decoration: none;
-            border-bottom: 3px solid transparent;
-            white-space: nowrap;
-            transition: all 0.2s;
-            cursor: pointer;
-            font-family: inherit;
-        }
-        .nav-btn:hover {
-            color: #667eea;
-            border-bottom-color: #667eea;
-            background: #f7fafc;
-        }
-        .nav-btn.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-        /* 讓錨點跳轉時不被 nav 擋住 */
-        [id] { scroll-margin-top: 56px; }
-
-        .footer {
-            text-align: center;
-            margin-top: 36px;
-            padding: 16px;
-            font-size: 0.82rem;
-            color: #a0aec0;
-        }
     </style>
 </head>
 <body>
@@ -728,11 +729,11 @@
         <a class="nav-btn" href="#sec-drugs">藥物解析</a>
         <a class="nav-btn" href="#sec-ban">禁忌</a>
         <a class="nav-btn" href="#sec-schedule">用藥時間表</a>
+        <a class="nav-btn" href="#sec-physical">物理緩解</a>
+        <a class="nav-btn" href="#sec-sos">就醫警訊</a>
         <a class="nav-btn" href="#sec-stair">階梯減量</a>
         <a class="nav-btn" href="#sec-vomit">嘔吐急救</a>
         <a class="nav-btn" href="#sec-diet">飲食禁忌</a>
-        <a class="nav-btn" href="#sec-physical">物理緩解</a>
-        <a class="nav-btn" href="#sec-sos">就醫警訊</a>
         <a class="nav-btn" href="#sec-tips">隱藏關卡</a>
         <a class="nav-btn" href="#sec-compare">藥物對照</a>
         <a class="nav-btn" href="#sec-power">戰力表</a>
@@ -943,8 +944,8 @@
         </ul>
     </div>
 
-    <!-- ===== 階梯式減量 ===== -->
-    <h2 id="sec-stair">補充：生理期第 1 至 3 天「階梯式」用藥減量調整法</h2>
+    <!-- ===== 六、階梯式減量 ===== -->
+    <h2 id="sec-stair">六、生理期第 1 至 3 天「階梯式」用藥減量調整法</h2>
     <p style="margin-bottom:14px; font-size:0.93rem; color:#718096;">不需要每天都吃最強的藥，隨著經期進展，像下樓梯一樣慢慢減量，保護肝腎：</p>
 
     <div class="stair-card day1">
@@ -976,8 +977,8 @@
         </ul>
     </div>
 
-    <!-- ===== 嘔吐急救 ===== -->
-    <h2 id="sec-vomit">補充：「如果已經痛到吐了」的緊急救援指南</h2>
+    <!-- ===== 七、嘔吐急救 ===== -->
+    <h2 id="sec-vomit">七、「如果已經痛到吐了」的緊急救援指南</h2>
 
     <div class="vomit-section">
         <h3>&#x1F922; 來不及提前攔截、已經吐了怎麼辦？</h3>
@@ -999,8 +1000,8 @@
         </div>
     </div>
 
-    <!-- ===== 飲食禁忌 ===== -->
-    <h2 id="sec-diet">補充：生理期發炎飲食大禁忌</h2>
+    <!-- ===== 八、飲食禁忌 ===== -->
+    <h2 id="sec-diet">八、生理期發炎飲食大禁忌</h2>
     <p style="margin-bottom:14px; font-size:0.93rem; color:#718096;">有些食物會直接刺激身體分泌更多前列腺素，讓疼痛加倍。生理期前三天請嚴格避開：</p>
 
     <div class="diet-cards">
@@ -1016,6 +1017,45 @@
             <h4>&#x1F9CA; 冰品與冰飲</h4>
             <p>冰冷食物會刺激微血管瞬間收縮，導致骨盆腔經血瘀滯、子宮更用力痙攣排血，引發劇烈絞痛。</p>
         </div>
+    </div>
+
+    <!-- ===== 九、實用細節隱藏關卡 ===== -->
+    <h2 id="sec-tips">九、實用細節隱藏關卡</h2>
+    <div class="bonus-cards">
+
+        <!-- 1. 咖啡因雙面刃 -->
+        <div class="bonus-card caffeine">
+            <h4>&#x2615; 1. 咖啡因的雙面刃效應</h4>
+            <div class="fact">
+                改源IB 裡面含有<strong>咖啡因</strong>，所以止痛快；但醫師開的「克他服寧」和「愛舒疼」裡面<strong>沒有咖啡因</strong>。
+            </div>
+            <div class="trick">
+                <strong>實用技巧：</strong>如果選擇吃醫師開的藥，但覺得頭痛壓不下來，可以配幾口<strong>黑咖啡或綠茶</strong>，自己幫處方藥「手動升級」加成止痛效果。<br>但切記，如果那天是吃改源IB，就<strong>不要再喝咖啡</strong>，以免咖啡因過量導致心悸。
+            </div>
+        </div>
+
+        <!-- 2. 黃金服用時機 -->
+        <div class="bonus-card timing">
+            <h4>&#x23F0; 2. 止痛藥的黃金服用時機</h4>
+            <div class="fact">
+                止痛藥不是「痛到骨子裡」才吃，那樣藥效會<strong>大打折扣</strong>。
+            </div>
+            <div class="trick">
+                <strong>實用技巧：</strong>偏頭痛或經痛最好的服藥時機，是「<strong>一感覺到隱隱作痛、或月經剛見紅</strong>」的 30 分鐘內立刻吃。這時候前列腺素還沒大量分泌，克他服寧和改源IB 就能直接把疼痛阻斷在起跑點。
+            </div>
+        </div>
+
+        <!-- 3. 藥物保存與過期 -->
+        <div class="bonus-card expiry">
+            <h4>&#x1F4E6; 3. 藥物保存與過期期限</h4>
+            <div class="fact">
+                成藥（改源IB）看外包裝有效期限就好；但醫師開的散裝藥丸（克他服寧、寧痛、愛舒疼）保存期限不同。
+            </div>
+            <div class="trick">
+                <strong>實用技巧：</strong>醫院開的裸裝藥丸，從領藥那天算起<strong>最多保存 6 個月</strong>。如果超過半年沒吃完，藥效會減弱或變質，建議丟棄，不要留到明年再吃。
+            </div>
+        </div>
+
     </div>
 
     <!-- ===== 附錄一：兩大止痛藥對照 ===== -->
@@ -1117,45 +1157,6 @@
             </tr>
         </tbody>
     </table>
-    </div>
-
-    <!-- ===== 六、細節隱藏關卡 ===== -->
-    <h2 id="sec-tips">六、實用細節隱藏關卡</h2>
-    <div class="bonus-cards">
-
-        <!-- 1. 咖啡因雙面刃 -->
-        <div class="bonus-card caffeine">
-            <h4>&#x2615; 1. 咖啡因的雙面刃效應</h4>
-            <div class="fact">
-                改源IB 裡面含有<strong>咖啡因</strong>，所以止痛快；但醫師開的「克他服寧」和「愛舒疼」裡面<strong>沒有咖啡因</strong>。
-            </div>
-            <div class="trick">
-                <strong>實用技巧：</strong>如果選擇吃醫師開的藥，但覺得頭痛壓不下來，可以配幾口<strong>黑咖啡或綠茶</strong>，自己幫處方藥「手動升級」加成止痛效果。<br>但切記，如果那天是吃改源IB，就<strong>不要再喝咖啡</strong>，以免咖啡因過量導致心悸。
-            </div>
-        </div>
-
-        <!-- 2. 黃金服用時機 -->
-        <div class="bonus-card timing">
-            <h4>&#x23F0; 2. 止痛藥的黃金服用時機</h4>
-            <div class="fact">
-                止痛藥不是「痛到骨子裡」才吃，那樣藥效會<strong>大打折扣</strong>。
-            </div>
-            <div class="trick">
-                <strong>實用技巧：</strong>偏頭痛或經痛最好的服藥時機，是「<strong>一感覺到隱隱作痛、或月經剛見紅</strong>」的 30 分鐘內立刻吃。這時候前列腺素還沒大量分泌，克他服寧和改源IB 就能直接把疼痛阻斷在起跑點。
-            </div>
-        </div>
-
-        <!-- 3. 藥物保存與過期 -->
-        <div class="bonus-card expiry">
-            <h4>&#x1F4E6; 3. 藥物保存與過期期限</h4>
-            <div class="fact">
-                成藥（改源IB）看外包裝有效期限就好；但醫師開的散裝藥丸（克他服寧、寧痛、愛舒疼）保存期限不同。
-            </div>
-            <div class="trick">
-                <strong>實用技巧：</strong>醫院開的裸裝藥丸，從領藥那天算起<strong>最多保存 6 個月</strong>。如果超過半年沒吃完，藥效會減弱或變質，建議丟棄，不要留到明年再吃。
-            </div>
-        </div>
-
     </div>
 
     <!-- ===== 附錄三：防吐生還指南 ===== -->
