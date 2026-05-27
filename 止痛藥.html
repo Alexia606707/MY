@@ -749,6 +749,24 @@
             .safe-mix p { font-size: 0.88rem !important; }
         }
 
+        /* ===== 安全交替認證（原 inline style 移入） ===== */
+        .safe-mix {
+            background: linear-gradient(135deg, #f0fff4, #c6f6d5);
+            border: 2px solid #68d391;
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin-bottom: 14px;
+        }
+        .safe-mix h3 {
+            color: #276749;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+        .safe-mix p {
+            font-size: 0.95rem;
+            color: #22543d;
+        }
+
         /* ===== 回到頂端 ===== */
         .back-top {
             position: fixed; bottom: 24px; right: 24px; width: 42px; height: 42px;
@@ -1014,6 +1032,10 @@
         .cal-detail-item:last-child { border-bottom: none; }
         .cal-detail-time { color: #718096; font-weight: 600; min-width: 50px; }
         .cal-detail-note { color: #a0aec0; font-size: 0.85em; margin-left: auto; }
+        .cal-detail-item .drug-tag {
+            display: inline-block; padding: 2px 10px; border-radius: 12px;
+            font-size: 0.82em; font-weight: 600;
+        }
 
         .cal-legend {
             display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px;
@@ -1161,9 +1183,9 @@
         <p>感冒藥多半已含有乙醯胺酚，重複服用會累積藥物濃度，引發<strong>急性肝毒性</strong>。</p>
     </div>
 
-    <div class="safe-mix" style="background: linear-gradient(135deg, #f0fff4, #c6f6d5); border: 2px solid #68d391; border-radius: 14px; padding: 22px 24px; margin-bottom: 14px;">
-        <h3 style="color: #276749; font-size: 1.05rem; margin-bottom: 8px;">&#x2705; 安全交替認證：克他服寧 與 愛舒疼 可以同一天交替服用！</h3>
-        <p style="font-size: 0.95rem; color: #22543d;">因為克他服寧走「<strong>腎臟代謝/傷胃</strong>」，愛舒疼走「<strong>肝臟代謝/不傷胃</strong>」。白天吃了克他服寧，傍晚如果只剩微痛，可以換吃愛舒疼，讓胃黏膜和腎臟得到充分休息。這是醫學上標準且安全的交替用藥策略。</p>
+    <div class="safe-mix">
+        <h3>&#x2705; 安全交替認證：克他服寧 與 愛舒疼 可以同一天交替服用！</h3>
+        <p>因為克他服寧走「<strong>腎臟代謝/傷胃</strong>」，愛舒疼走「<strong>肝臟代謝/不傷胃</strong>」。白天吃了克他服寧，傍晚如果只剩微痛，可以換吃愛舒疼，讓胃黏膜和腎臟得到充分休息。這是醫學上標準且安全的交替用藥策略。</p>
     </div>
 
     <!-- ===== 三、時間表 ===== -->
@@ -1704,6 +1726,12 @@ var recDateFrom = '', recDateTo = '';
 // 記住各區塊展開/收合狀態
 var recSecState = { stats: true, calendar: true, detail: true };
 
+// HTML 轉義（防 XSS）
+function escHtml(str) {
+    if(!str) return '';
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 // 藥物對應 CSS class
 function drugClass(name) {
     if(name.indexOf('克他服寧') >= 0) return 'drug-tag-diclofenac';
@@ -1906,13 +1934,22 @@ function generateCode() {
 
 function copyCode() {
     var code = document.getElementById('codeOutput').textContent;
-    try {
-        var ta = document.createElement('textarea');
-        ta.value = code; ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
-        document.body.appendChild(ta); ta.focus(); ta.select();
-        document.execCommand('copy'); ta.remove();
-        showRecordToast('已複製到剪貼簿');
-    } catch(e) { showRecordToast('複製失敗，請手動選取複製', true); }
+    if(navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(function(){
+            showRecordToast('已複製到剪貼簿');
+        }).catch(function(){
+            showRecordToast('複製失敗，請手動選取複製', true);
+        });
+    } else {
+        // 降級方案：舊瀏覽器使用 execCommand
+        try {
+            var ta = document.createElement('textarea');
+            ta.value = code; ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+            document.body.appendChild(ta); ta.focus(); ta.select();
+            document.execCommand('copy'); ta.remove();
+            showRecordToast('已複製到剪貼簿');
+        } catch(e) { showRecordToast('複製失敗，請手動選取複製', true); }
+    }
 }
 
 async function saveToMedData() {
@@ -2103,6 +2140,7 @@ function renderRecords() {
     var leastUsedList = sortedDrugs.filter(function(d){ return drugCount[d] === minCount; });
     var latest = filtered.length ? filtered[0] : null;
 
+    h += '<div class="rec-section">';
     h += '<div class="rec-section-title" onclick="toggleRecSec(this,\'stats\')">統計總覽<span class="arrow ' + (recSecState.stats ? 'down' : 'right') + '"></span></div>';
     h += '<div' + (recSecState.stats ? '' : ' style="display:none"') + '>';
     h += '<div class="record-stats-grid">';
@@ -2111,12 +2149,16 @@ function renderRecords() {
     h += '<div class="record-stat-box"><div class="r-label">最常使用</div><div class="r-val" style="font-size:' + (mostUsedList.length > 1 ? '0.85' : '1') + 'em">' + (mostUsedList.length ? mostUsedList.join('、') : '-') + '</div><div class="r-note">' + (maxCount ? maxCount + ' 次' : '') + '</div></div>';
     if(maxCount !== minCount) h += '<div class="record-stat-box"><div class="r-label">最少使用</div><div class="r-val" style="font-size:' + (leastUsedList.length > 1 ? '0.85' : '1') + 'em">' + leastUsedList.join('、') + '</div><div class="r-note">' + minCount + ' 次</div></div>';
     h += '</div></div>';
+    h += '</div>'; // .rec-section (統計總覽)
 
     // ===== 月曆（可收縮）=====
+    h += '<div class="rec-section">';
     h += '<div class="rec-section-title" onclick="toggleRecSec(this,\'calendar\')">用藥月曆<span class="arrow ' + (recSecState.calendar ? 'down' : 'right') + '"></span></div>';
     h += '<div id="calendarWrap"' + (recSecState.calendar ? '' : ' style="display:none"') + '></div>';
+    h += '</div>'; // .rec-section (用藥月曆)
 
     // ===== 用藥明細（可收縮）=====
+    h += '<div class="rec-section">';
     h += '<div class="rec-section-title" onclick="toggleRecSec(this,\'detail\')">用藥明細<span class="arrow ' + (recSecState.detail ? 'down' : 'right') + '"></span></div>';
     h += '<div id="recordDetailWrap"' + (recSecState.detail ? '' : ' style="display:none"') + '>';
 
@@ -2137,15 +2179,25 @@ function renderRecords() {
             h += '<td>' + r.date + '</td>';
             h += '<td><span class="drug-tag ' + cls + '">' + r.drug.split(' ')[0] + '</span></td>';
             h += '<td>' + r.dose + '</td>';
-            h += '<td style="color:#718096;font-size:0.85em">' + (r.note || '-') + '</td>';
+            h += '<td style="color:#718096;font-size:0.85em">' + (r.note ? escHtml(r.note) : '-') + '</td>';
             h += '</tr>';
         });
         h += '</table>';
         h += '<div style="text-align:right;color:#a0aec0;font-size:0.78em;margin-top:8px;">共 ' + filtered.length + ' 筆</div>';
     }
     h += '</div>'; // recordDetailWrap
+    h += '</div>'; // .rec-section (用藥明細)
 
     container.innerHTML = h;
+
+    // === rec-section-title sticky 在篩選列下方（避免被篩選列蓋住）===
+    var filterWrapEl = document.querySelector('.rec-filter-wrap');
+    if(filterWrapEl){
+        var filterH = filterWrapEl.offsetHeight;
+        container.querySelectorAll('.rec-section-title').forEach(function(el){
+            el.style.top = filterH + 'px';
+        });
+    }
 
     // 渲染月曆（需要 DOM 先存在）
     if(recSecState.calendar) renderCalendar();
@@ -2221,6 +2273,15 @@ function renderCalendar() {
 
     // 計算篩選後的最早/最晚月份
     var allDates = Object.keys(byDate).sort();
+
+    // 預設選取最近一天有紀錄的日期
+    if(calSelectedDate === null) {
+        calSelectedDate = allDates[allDates.length - 1];
+        // 同時把月曆切到該日期所在的月份
+        calYear = parseInt(calSelectedDate.substring(0, 4));
+        calMonth = parseInt(calSelectedDate.substring(5, 7)) - 1;
+    }
+
     var minYM = allDates[0].substring(0,7);  // '2026-05'
     var maxYM = allDates[allDates.length-1].substring(0,7);
     var minYear = parseInt(minYM.substring(0,4)), minMon = parseInt(minYM.substring(5)) - 1;
@@ -2313,7 +2374,7 @@ function renderCalendar() {
             h += '<span class="cal-detail-time">' + time + '</span>';
             h += '<span class="drug-tag ' + cls + '">' + r.drug.split(' ')[0] + '</span>';
             h += '<span>' + r.dose + '</span>';
-            if(r.note) h += '<span class="cal-detail-note">' + r.note + '</span>';
+            if(r.note) h += '<span class="cal-detail-note">' + escHtml(r.note) + '</span>';
             h += '</div>';
         });
         h += '</div>';
@@ -2345,7 +2406,7 @@ function exportRecords() {
 
     var csv = '\uFEFF日期時間,藥物,劑量,備註\n'; // BOM for Excel
     records.forEach(function(r){
-        csv += '"' + r.date + '","' + r.drug + '",' + r.dose + ',"' + (r.note || '') + '"\n';
+        csv += '"' + r.date + '","' + r.drug + '","' + r.dose + '","' + (r.note || '') + '"\n';
     });
 
     var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
