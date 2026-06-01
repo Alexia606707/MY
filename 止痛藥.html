@@ -835,6 +835,21 @@
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             width: auto; height: auto; opacity: 0; cursor: pointer;
         }
+        .note-preset-row {
+            display: flex; gap: 6px; margin-top: 5px;
+        }
+        .note-preset-btn {
+            font-size: 0.78em; padding: 4px 14px; border-radius: 16px; cursor: pointer;
+            background: rgba(102,126,234,0.08); border: 1px solid #e2e8f0; color: #667eea;
+            font-family: inherit; font-weight: 600; transition: all 0.2s; user-select: none;
+        }
+        .note-preset-btn:hover {
+            border-color: #667eea; background: rgba(102,126,234,0.15);
+        }
+        .note-preset-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2); border-color: #667eea;
+            color: #fff; box-shadow: 0 0 6px rgba(102,126,234,0.3);
+        }
         .med-entry .btn-remove {
             padding: 3px 12px; border: 1px solid #fc8181; border-radius: 6px;
             background: rgba(252,129,129,0.08); color: #e53e3e; cursor: pointer;
@@ -1826,7 +1841,13 @@ function addMedEntry() {
     div.innerHTML = '<span class="entry-num">#' + displayNum + '</span>'
         + '<div class="form-row">'
         + '<div class="form-group"><label>日期時間</label><input type="datetime-local" class="me-datetime" value="' + prevDate + '" onfocus="autoFillNow(this)"></div>'
-        + '<div class="form-group"><label>備註（選填）</label><input type="text" class="me-note" placeholder="如：生理痛、頭痛"></div>'
+        + '<div class="form-group"><label>備註（選填）</label>'
+        + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
+        + '<input type="text" class="me-note" placeholder="如：生理痛、頭痛" oninput="highlightNotePreset(this)" style="flex:1;min-width:120px">'
+        + '<div class="note-preset-row">'
+        + '<button type="button" class="note-preset-btn" onclick="setNotePreset(this,\'生理痛\')">生理痛</button>'
+        + '<button type="button" class="note-preset-btn" onclick="setNotePreset(this,\'頭痛\')">頭痛</button>'
+        + '</div></div></div>'
         + '</div>'
         + '<div class="form-row">'
         + '<div class="form-group"><label>藥物</label>'
@@ -1844,6 +1865,28 @@ function addMedEntry() {
 
     document.getElementById('medEntries').appendChild(div);
     updateMeDeleteBtns();
+}
+
+// 備註預設按鈕：點擊帶入文字
+function setNotePreset(btn, text) {
+    var entry = btn.closest('.med-entry');
+    var input = entry.querySelector('.me-note');
+    if(input.value === text) {
+        // 再次點擊相同按鈕 → 清空
+        input.value = '';
+    } else {
+        input.value = text;
+    }
+    highlightNotePreset(input);
+}
+
+// 高亮目前選中的備註預設按鈕
+function highlightNotePreset(input) {
+    var entry = input.closest('.med-entry');
+    var val = input.value.trim();
+    entry.querySelectorAll('.note-preset-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.textContent === val);
+    });
 }
 
 // 點擊日期欄時，若為空則自動帶入當下時間

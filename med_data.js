@@ -23,4 +23,6 @@ const medRecords = [
   {date:'2026-05-24 12:40', drug:'愛舒疼', dose:'1 顆', note:'頭痛'},
   {date:'2026-05-24 19:35', drug:'愛舒疼', dose:'1 顆', note:'頭痛'},
   {date:'2026-05-25 09:10', drug:'改源IB', dose:'1 包', note:'頭痛'},
+  {date:'2026-05-31 21:00', drug:'愛舒疼', dose:'1 顆', note:'頭痛'},
+  {date:'2026-06-01 07:40', drug:'改源IB', dose:'1 包', note:'頭痛'},
 ];
