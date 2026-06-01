@@ -1651,8 +1651,8 @@
 <button class="back-top" id="btnTop">↑</button>
 <div class="toast" id="toast"></div>
 
-<!-- 載入外部資料檔 -->
-<script src="med_data.js"></script>
+<!-- 載入外部資料檔（加時間戳防止手機瀏覽器快取舊資料） -->
+<script>document.write('<script src="med_data.js?' + Date.now() + '"><\/script>');</script>
 
 <script>
 // 捲動時高亮當前段落的導覽按鈕
@@ -1739,7 +1739,7 @@ var currentFilter = 'all';
 var currentTimeFilter = 'all';
 var recDateFrom = '', recDateTo = '';
 // 記住各區塊展開/收合狀態
-var recSecState = { stats: true, calendar: true, detail: true };
+var recSecState = { stats: true, calendar: true, detail: false };
 
 // HTML 轉義（防 XSS）
 function escHtml(str) {
@@ -2285,10 +2285,17 @@ function clearAllFilters() {
 // ============================
 var calYear, calMonth, calSelectedDate = null;
 
+// 初始化時定位到最新紀錄的月份
 function initCalendar() {
-    var now = new Date();
-    calYear = now.getFullYear();
-    calMonth = now.getMonth(); // 0-based
+    if(typeof medRecords !== 'undefined' && medRecords.length) {
+        var lastDate = medRecords[medRecords.length - 1].date;
+        calYear = parseInt(lastDate.substring(0, 4));
+        calMonth = parseInt(lastDate.substring(5, 7)) - 1;
+    } else {
+        var now = new Date();
+        calYear = now.getFullYear();
+        calMonth = now.getMonth();
+    }
 }
 initCalendar();
 
@@ -2317,12 +2324,14 @@ function renderCalendar() {
     // 計算篩選後的最早/最晚月份
     var allDates = Object.keys(byDate).sort();
 
-    // 預設選取最近一天有紀錄的日期
+    // 預設選取當前月份中最新的有紀錄日期（不覆蓋 calYear/calMonth，避免切月後被跳回）
     if(calSelectedDate === null) {
-        calSelectedDate = allDates[allDates.length - 1];
-        // 同時把月曆切到該日期所在的月份
-        calYear = parseInt(calSelectedDate.substring(0, 4));
-        calMonth = parseInt(calSelectedDate.substring(5, 7)) - 1;
+        var currentMonthStr = calYear + '-' + String(calMonth+1).padStart(2,'0');
+        var datesInCurrentMonth = allDates.filter(function(d){ return d.substring(0,7) === currentMonthStr; });
+        if(datesInCurrentMonth.length) {
+            calSelectedDate = datesInCurrentMonth[datesInCurrentMonth.length - 1];
+        }
+        // 如果當前月份沒有紀錄，calSelectedDate 維持 null（不選取任何日期）
     }
 
     var minYM = allDates[0].substring(0,7);  // '2026-05'
